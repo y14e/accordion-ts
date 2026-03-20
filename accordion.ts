@@ -189,7 +189,7 @@ export default class Accordion {
     }
   }
 
-  async destroy() {
+  async destroy(): Promise<void> {
     if (this.destroyed) {
       return;
     }
