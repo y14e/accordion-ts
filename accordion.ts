@@ -19,7 +19,7 @@ export default class Accordion {
   private controller!: AbortController;
   private destroyed!: boolean;
 
-  constructor(root: HTMLElement, options?: Partial<AccordionOptions>) {
+  constructor(root: HTMLElement, options: Partial<AccordionOptions> = {}) {
     if (!root) {
       return;
     }
@@ -35,8 +35,8 @@ export default class Accordion {
       },
     };
     this.settings = {
-      animation: { ...this.defaults.animation, ...options?.animation },
-      selector: { ...this.defaults.selector, ...options?.selector },
+      animation: { ...this.defaults.animation, ...options.animation },
+      selector: { ...this.defaults.selector, ...options.selector },
     };
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
       this.settings.animation.duration = 0;
