@@ -123,7 +123,7 @@ export default class Accordion {
       if (!open) {
         content.setAttribute('hidden', 'until-found');
       }
-      ['block-size', 'overflow'].forEach((name) => void content.style.removeProperty(name));
+      ['block-size', 'overflow'].forEach((name) => content.style.removeProperty(name));
     });
   }
 
@@ -192,6 +192,6 @@ export default class Accordion {
     if (!force) {
       await Promise.all(this.animations.map((animation) => animation?.finished.catch(() => {})));
     }
-    this.animations.forEach((animation) => void animation?.cancel());
+    this.animations.forEach((animation) => animation?.cancel());
   }
 }
