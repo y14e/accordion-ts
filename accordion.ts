@@ -9,13 +9,19 @@ interface AccordionOptions {
   };
 }
 
+type AccordionEntry = {
+  animation: Animation | null;
+  content: HTMLElement;
+  trigger: HTMLElement;
+};
+
 export default class Accordion {
   private readonly rootElement: HTMLElement;
   private readonly defaults: AccordionOptions;
   private readonly settings: AccordionOptions;
   private readonly triggerElements: NodeListOf<HTMLElement>;
   private readonly contentElements: NodeListOf<HTMLElement>;
-  private readonly entries: WeakMap<HTMLElement, { animation: Animation | null; content: HTMLElement; trigger: HTMLElement }> = new WeakMap();
+  private readonly entries: WeakMap<HTMLElement, AccordionEntry> = new WeakMap();
   private readonly controller = new AbortController();
   private destroyed = false;
 
@@ -42,17 +48,17 @@ export default class Accordion {
     const NOT_NESTED = `:not(:scope ${this.settings.selector.content} *)`;
     this.triggerElements = this.rootElement.querySelectorAll(`${this.settings.selector.trigger}${NOT_NESTED}`);
     this.contentElements = this.rootElement.querySelectorAll(`${this.settings.selector.content}${NOT_NESTED}`);
+    if (this.triggerElements.length === 0 || this.contentElements.length === 0) throw new Error('Trigger or content element missing');
     this.initialize();
   }
 
   private initialize(): void {
-    if (this.triggerElements.length === 0 || this.contentElements.length === 0) return;
     const { signal } = this.controller;
     for (let i = 0; i < this.triggerElements.length; i++) {
       const trigger = this.triggerElements[i];
       const id = Math.random().toString(36).slice(-8);
       const content = this.contentElements[i];
-      if (!content) return;
+      if (!content) continue;
       content.id ||= `accordion-content-${id}`;
       trigger.setAttribute('aria-controls', content.id);
       if (!trigger.hasAttribute('aria-expanded')) {
@@ -75,11 +81,15 @@ export default class Accordion {
     for (let i = 0; i < this.triggerElements.length; i++) {
       const trigger = this.triggerElements[i];
       const content = this.contentElements[i];
-      if (!content) return;
-      const entry = { animation: null, content, trigger };
+      if (!content) continue;
+      const entry = this.createEntry(trigger, content);
       this.entries.set(trigger, entry).set(content, entry);
     }
     this.rootElement.setAttribute('data-accordion-initialized', '');
+  }
+
+  private createEntry(trigger: HTMLElement, content: HTMLElement): AccordionEntry {
+    return { animation: null, content, trigger };
   }
 
   private getActiveElement(): HTMLElement | null {
