@@ -76,7 +76,7 @@ export default class Accordion {
     }
   }
 
-  async #destroy(force = false): Promise<void> {
+  async destroy(force = false): Promise<void> {
     if (this.#destroyed || !this.#triggerElements || !this.#bindings) {
       return;
     }
@@ -245,7 +245,11 @@ export default class Accordion {
         binding.animation = null;
       }
     };
-    animation.addEventListener('cancel', cleanup, { once: true });
+    if (!this.#controller) {
+      return;
+    }
+    const { signal } = this.#controller;
+    animation.addEventListener('cancel', cleanup, { once: true, signal });
     animation.addEventListener(
       'finish',
       () => {
@@ -257,7 +261,7 @@ export default class Accordion {
         style.removeProperty('block-size');
         style.removeProperty('overflow');
       },
-      { once: true },
+      { once: true, signal },
     );
   }
 
