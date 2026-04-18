@@ -133,9 +133,7 @@ export default class Accordion {
       }
 
       trigger.addEventListener('click', this.#onTriggerClick, { signal });
-      trigger.addEventListener('keydown', this.#onTriggerKeyDown, {
-        signal,
-      });
+      trigger.addEventListener('keydown', this.#onTriggerKeyDown, { signal });
     }
 
     for (let i = 0, l = this.#contentElements.length; i < l; i++) {
