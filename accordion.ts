@@ -1,11 +1,11 @@
 export interface AccordionOptions {
-  animation?: {
-    duration?: number;
-    easing?: string;
+  readonly animation?: {
+    readonly duration?: number;
+    readonly easing?: string;
   };
-  selector?: {
-    content?: string;
-    trigger?: string;
+  readonly selector?: {
+    readonly content?: string;
+    readonly trigger?: string;
   };
 }
 
@@ -57,7 +57,7 @@ export default class Accordion {
     };
 
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      this.#settings.animation.duration = 0;
+      Object.assign(this.#settings.animation, { duration: 0 });
     }
 
     const { trigger, content } = this.#settings.selector;
