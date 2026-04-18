@@ -1,4 +1,4 @@
-export interface Options {
+export interface AccordionOptions {
   animation?: {
     duration?: number;
     easing?: string;
@@ -32,9 +32,9 @@ export default class Accordion {
       content: ':has(> [data-accordion-trigger]) + *',
       trigger: '[data-accordion-trigger]',
     },
-  } satisfies DeepRequired<Options>;
+  } satisfies DeepRequired<AccordionOptions>;
 
-  #settings: DeepRequired<Options>;
+  #settings: DeepRequired<AccordionOptions>;
 
   #triggerElements: NodeListOf<HTMLElement> | null;
   #contentElements: NodeListOf<HTMLElement> | null;
@@ -44,7 +44,7 @@ export default class Accordion {
 
   #destroyed = false;
 
-  constructor(root: HTMLElement, options: Options = {}) {
+  constructor(root: HTMLElement, options: AccordionOptions = {}) {
     if (!root) {
       throw new Error('Root element missing.');
     }
