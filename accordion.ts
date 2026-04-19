@@ -59,7 +59,7 @@ export default class Accordion {
     this.#triggerElements = this.#rootElement.querySelectorAll(`${trigger}${NOT_NESTED}`);
     this.#contentElements = this.#rootElement.querySelectorAll(`${content}${NOT_NESTED}`);
 
-    if (!this.#triggerElements.length || !this.#contentElements.length) {
+    if (this.#triggerElements.length === 0 || this.#contentElements.length === 0) {
       throw new Error('Trigger or content element missing.');
     }
 
