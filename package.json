@@ -20,7 +20,6 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "bun test",
     "prepublishOnly": "npm run build && npm test",
     "lint": "tsc --noEmit"
   },
