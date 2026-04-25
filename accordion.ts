@@ -302,7 +302,7 @@ export default class Accordion {
     animation.addEventListener('cancel', cleanup, { once: true, signal });
     animation.addEventListener(
       'finish',
-      (): void => {
+      () => {
         cleanup();
 
         if (!isOpen) {
@@ -342,7 +342,7 @@ export default class Accordion {
       return Promise.resolve();
     }
 
-    return new Promise<void>((resolve): void => {
+    return new Promise<void>((resolve) => {
       const done = (): void => {
         resolve();
       };
