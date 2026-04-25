@@ -180,7 +180,7 @@ export default class Accordion {
 
     event.preventDefault();
     event.stopPropagation();
-    const focusables = this.#triggerElements.filter((trigger) => this.#isFocusable(trigger));
+    const focusables = this.#triggerElements.filter(this.#isFocusable);
     const active = this.#getActiveElement();
 
     if (!active) {
