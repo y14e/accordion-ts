@@ -304,6 +304,7 @@ export default class Accordion {
 
     const { signal } = this.#controller;
     animation.addEventListener('cancel', cleanup, { once: true, signal });
+
     animation.addEventListener(
       'finish',
       () => {
