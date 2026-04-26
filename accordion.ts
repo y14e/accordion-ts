@@ -111,7 +111,7 @@ export default class Accordion {
     this.#bindings = null;
   }
 
-  #initialize(): void {
+  #initialize() {
     if (!this.#triggerElements || !this.#contentElements || !this.#bindings || !this.#controller) {
       return;
     }
@@ -170,7 +170,7 @@ export default class Accordion {
     this.#rootElement.setAttribute('data-accordion-initialized', '');
   }
 
-  #onTriggerClick = (event: Event): void => {
+  #onTriggerClick = (event: Event) => {
     event.preventDefault();
     event.stopPropagation();
     const trigger = event.currentTarget;
@@ -180,7 +180,7 @@ export default class Accordion {
     }
   };
 
-  #onTriggerKeyDown = (event: KeyboardEvent): void => {
+  #onTriggerKeyDown = (event: KeyboardEvent) => {
     if (!this.#triggerElements) {
       return;
     }
@@ -225,7 +225,7 @@ export default class Accordion {
     focusables.at(newIndex)?.focus();
   };
 
-  #onContentBeforeMatch = (event: Event): void => {
+  #onContentBeforeMatch = (event: Event) => {
     const content = event.currentTarget;
 
     if (!(content instanceof HTMLElement)) {
@@ -243,7 +243,7 @@ export default class Accordion {
     }
   };
 
-  #toggle(trigger: HTMLElement, isOpen: boolean, isMatch = false): void {
+  #toggle(trigger: HTMLElement, isOpen: boolean, isMatch = false) {
     if (!this.#triggerElements) {
       return;
     }
@@ -292,7 +292,7 @@ export default class Accordion {
     binding.animation = animation;
     trigger.setAttribute('aria-expanded', String(isOpen));
 
-    const cleanup = (): void => {
+    const cleanup = () => {
       if (binding.animation === animation) {
         binding.animation = null;
       }
@@ -321,11 +321,11 @@ export default class Accordion {
     );
   }
 
-  #createBinding(trigger: HTMLElement, content: HTMLElement): Binding {
+  #createBinding(trigger: HTMLElement, content: HTMLElement) {
     return { trigger, content, animation: null };
   }
 
-  #getActiveElement(): HTMLElement | null {
+  #getActiveElement() {
     let active = document.activeElement;
 
     while (active instanceof HTMLElement && active.shadowRoot?.activeElement) {
@@ -335,11 +335,11 @@ export default class Accordion {
     return active instanceof HTMLElement ? active : null;
   }
 
-  #isFocusable(element: HTMLElement): boolean {
+  #isFocusable(element: HTMLElement) {
     return element.getAttribute('aria-disabled') !== 'true' && !element.hasAttribute('disabled');
   }
 
-  #waitAnimation(animation: Animation): Promise<void> {
+  #waitAnimation(animation: Animation) {
     const { playState } = animation;
 
     if (playState === 'idle' || playState === 'finished') {
@@ -347,7 +347,7 @@ export default class Accordion {
     }
 
     return new Promise<void>((resolve) => {
-      const done = (): void => {
+      const done = () => {
         resolve();
       };
 
