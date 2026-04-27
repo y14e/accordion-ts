@@ -9,13 +9,7 @@ export interface AccordionOptions {
   };
 }
 
-type DeepRequired<T> = T extends (...args: unknown[]) => unknown
-  ? T
-  : T extends readonly unknown[]
-    ? T
-    : T extends object
-      ? { [K in keyof T]-?: DeepRequired<NonNullable<T[K]>> }
-      : NonNullable<T>;
+type DeepRequired<T> = T extends (...args: unknown[]) => unknown ? T : T extends readonly unknown[] ? T : T extends object ? { [K in keyof T]-?: DeepRequired<NonNullable<T[K]>> } : NonNullable<T>;
 
 type Binding = {
   trigger: HTMLElement;
@@ -257,22 +251,14 @@ export default class Accordion {
     const name = trigger.getAttribute('data-accordion-name');
 
     if (name && isOpen) {
-      const opened = this.#triggerElements.find(
-        (t) =>
-          t !== trigger && t.getAttribute('data-accordion-name') === name && t.getAttribute('aria-expanded') === 'true',
-      );
+      const opened = this.#triggerElements.find((t) => t !== trigger && t.getAttribute('data-accordion-name') === name && t.getAttribute('aria-expanded') === 'true');
 
       if (opened) {
         this.#toggle(opened, false, isMatch);
       }
     }
 
-    trigger.setAttribute(
-      'aria-label',
-      trigger.getAttribute(`data-accordion-${isOpen ? 'expanded' : 'collapsed'}-label`) ??
-        trigger.getAttribute('aria-label') ??
-        '',
-    );
+    trigger.setAttribute('aria-label', trigger.getAttribute(`data-accordion-${isOpen ? 'expanded' : 'collapsed'}-label`) ?? trigger.getAttribute('aria-label') ?? '');
 
     const { content } = binding;
     const startSize = content.hidden ? 0 : content.offsetHeight;
@@ -285,10 +271,7 @@ export default class Accordion {
     binding.animation?.cancel();
     content.style.setProperty('overflow', 'clip');
     const { duration, easing } = this.#settings.animation;
-    const animation = content.animate(
-      { blockSize: [`${startSize}px`, `${endSize}px`] },
-      { duration: isMatch ? 0 : duration, easing },
-    );
+    const animation = content.animate({ blockSize: [`${startSize}px`, `${endSize}px`] }, { duration: isMatch ? 0 : duration, easing });
     binding.animation = animation;
     trigger.setAttribute('aria-expanded', String(isOpen));
 
