@@ -1,4 +1,4 @@
-# accordion.ts (v2)
+# accordion.ts
 
 WAI-ARIA compliant [accordion](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/) pattern implementation in TypeScript.
 
