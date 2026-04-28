@@ -133,7 +133,6 @@ export default class Accordion {
 
       if (!this.#isFocusable(trigger)) {
         trigger.setAttribute('aria-disabled', 'true');
-        trigger.setAttribute('disabled', '');
         trigger.setAttribute('tabindex', '-1');
         trigger.style.setProperty('pointer-events', 'none');
       }
