@@ -130,9 +130,11 @@ export default class Accordion {
       trigger.setAttribute('aria-controls', content.id);
       trigger.setAttribute('aria-expanded', trigger.getAttribute('aria-expanded') ?? 'false');
       trigger.id ||= `accordion-trigger-${id}`;
-      trigger.setAttribute('tabindex', this.#isFocusable(trigger) ? '0' : '-1');
 
       if (!this.#isFocusable(trigger)) {
+        trigger.setAttribute('aria-disabled', 'true');
+        trigger.setAttribute('disabled', '');
+        trigger.setAttribute('tabindex', '-1');
         trigger.style.setProperty('pointer-events', 'none');
       }
 
@@ -316,7 +318,7 @@ export default class Accordion {
   }
 
   #isFocusable(element: HTMLElement) {
-    return element.getAttribute('aria-disabled') !== 'true' && !element.hasAttribute('disabled');
+    return !element.hasAttribute('disabled') && element.getAttribute('tabindex') !== '-1';
   }
 
   #waitAnimation(animation: Animation) {
