@@ -2,6 +2,8 @@
 
 WAI-ARIA compliant [accordion](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/) pattern implementation in TypeScript.
 
+## Usage
+
 ```ts
 import Accordion from './accordion';
 
@@ -13,7 +15,7 @@ new Accordion(root, options);
 
 ```
 
-### 🪄 Options
+## 🪄 Options
 
 ```ts
 interface AccordionOptions {
@@ -26,6 +28,37 @@ interface AccordionOptions {
     trigger?: string;  // (default: '[data-accordion-trigger]')
   };
 }
+```
+
+## 📦 API
+
+### `open`
+
+```ts
+accordion.open(trigger);
+// => void
+//
+// trigger: HTMLElement
+```
+
+### `close`
+
+```ts
+accordion.close(trigger);
+// => void
+//
+// trigger: HTMLElement
+```
+
+### `destroy`
+
+Destroys the instance and cleans up all event listeners.
+
+```ts
+accordion.destroy(force);
+// => Promise<void>
+//
+// force (optional): If true, skips waiting for animations to finish.
 ```
 
 ## Demo
