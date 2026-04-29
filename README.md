@@ -15,7 +15,7 @@ new Accordion(root, options);
 
 ```
 
-### 🪄 Options
+## 🪄 Options
 
 ```ts
 interface AccordionOptions {
@@ -30,9 +30,9 @@ interface AccordionOptions {
 }
 ```
 
-### 📦 API
+## 📦 API
 
-#### open
+### open
 
 ```ts
 accordion.open(trigger);
@@ -41,7 +41,7 @@ accordion.open(trigger);
 // trigger: HTMLElement
 ```
 
-#### close
+### close
 
 ```ts
 accordion.close(trigger);
@@ -50,7 +50,7 @@ accordion.close(trigger);
 // trigger: HTMLElement
 ```
 
-#### destroy
+### destroy
 
 Destroys the instance and cleans up all event listeners.
 
