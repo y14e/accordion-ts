@@ -78,7 +78,7 @@ export default class Accordion {
     }
   }
 
-  async destroy(isForce = false): Promise<void> {
+  async destroy(force = false): Promise<void> {
     if (this.#isDestroyed || !this.#triggerElements || !this.#bindings) {
       return;
     }
@@ -88,7 +88,7 @@ export default class Accordion {
     this.#controller = null;
     this.#rootElement.removeAttribute('data-accordion-initialized');
 
-    if (!isForce) {
+    if (!force) {
       const promises: Promise<void>[] = [];
 
       this.#triggerElements.forEach((trigger) => {
