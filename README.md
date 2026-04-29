@@ -55,10 +55,10 @@ accordion.close(trigger);
 Destroys the instance and cleans up all event listeners.
 
 ```ts
-accordion.destroy(isForce);
+accordion.destroy(force);
 // => Promise<void>
 //
-// isForce (optional): If true, skips waiting for animations to finish.
+// force (optional): If true, skips waiting for animations to finish.
 ```
 
 ## Demo
