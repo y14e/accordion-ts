@@ -19,11 +19,11 @@ new Accordion(root, options);
 interface AccordionOptions {
   animation?: {
     duration?: number; // ms (default: 300)
-    easing?: string; // <easing-function> (default: 'ease')
+    easing?: string;   // <easing-function> (default: 'ease')
   };
   selector?: {
-    content?: string;
-    trigger?: string;
+    content?: string;  // (default: ':has(> [data-accordion-trigger]) + *')
+    trigger?: string;  // (default: '[data-accordion-trigger]')
   };
 }
 ```
