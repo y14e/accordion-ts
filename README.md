@@ -28,6 +28,35 @@ interface AccordionOptions {
 }
 ```
 
+### 📦 API
+
+#### open
+
+```ts
+accordion.open(trigger);
+// => void
+//
+// trigger: HTMLElement
+```
+
+#### close
+
+```ts
+accordion.open(trigger);
+// => void
+//
+// trigger: HTMLElement
+```
+
+#### destroy
+
+```ts
+accordion.destroy(isForce);
+// => Promise<void>
+//
+// isForce (optional): If true, skips waiting for animations to finish.
+```
+
 ## Demo
 
 https://y14e.github.io/accordion-ts/
