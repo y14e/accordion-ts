@@ -50,6 +50,8 @@ accordion.open(trigger);
 
 #### destroy
 
+Destroys the accordion instance and cleans up all event listeners.
+
 ```ts
 accordion.destroy(isForce);
 // => Promise<void>
