@@ -44,7 +44,7 @@ accordion.open(trigger);
 #### close
 
 ```ts
-accordion.open(trigger);
+accordion.close(trigger);
 // => void
 //
 // trigger: HTMLElement
