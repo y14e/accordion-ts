@@ -30,7 +30,7 @@ interface AccordionOptions {
 }
 ```
 
-## 📦 API
+## 📦 APIs
 
 ### `open`
 
