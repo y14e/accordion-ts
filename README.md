@@ -24,8 +24,8 @@ interface AccordionOptions {
     easing?: string;   // <easing-function> (default: 'ease')
   };
   selector?: {
-    content?: string;  // (default: ':has(> [data-accordion-trigger]) + *')
-    trigger?: string;  // (default: '[data-accordion-trigger]')
+    content?: string;  // default: ':has(> [data-accordion-trigger]) + *'
+    trigger?: string;  // default: '[data-accordion-trigger]'
   };
 }
 ```
