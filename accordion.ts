@@ -40,7 +40,7 @@ export default class Accordion {
   #isDestroyed = false;
 
   constructor(root: HTMLElement, options: AccordionOptions = {}) {
-    if (!root) {
+    if (!(root instanceof HTMLElement)) {
       throw new Error('Root element missing');
     }
 
@@ -67,13 +67,13 @@ export default class Accordion {
   }
 
   open(trigger: HTMLElement): void {
-    if (!this.#isDestroyed && this.#bindings?.has(trigger)) {
+    if (trigger instanceof HTMLElement && !this.#isDestroyed && this.#bindings?.has(trigger)) {
       this.#toggle(trigger, true);
     }
   }
 
   close(trigger: HTMLElement): void {
-    if (!this.#isDestroyed && this.#bindings?.has(trigger)) {
+    if (trigger instanceof HTMLElement && !this.#isDestroyed && this.#bindings?.has(trigger)) {
       this.#toggle(trigger, false);
     }
   }
