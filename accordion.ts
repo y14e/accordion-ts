@@ -8,9 +8,9 @@
  * @see {@link https://github.com/y14e/accordion-ts}
  */
 
-// -----------------------------------------------------------------------------
-// [Types]
-// -----------------------------------------------------------------------------
+// =============================================================================
+// Types
+// =============================================================================
 
 export interface AccordionOptions {
   readonly animation?: {
@@ -37,9 +37,9 @@ type Binding = {
   animation: Animation | null;
 };
 
-// -----------------------------------------------------------------------------
-// [APIs]
-// -----------------------------------------------------------------------------
+// =============================================================================
+// APIs
+// =============================================================================
 
 export default class Accordion {
   #rootElement: HTMLElement;
@@ -317,11 +317,11 @@ export default class Accordion {
     binding.animation = animation;
     trigger.setAttribute('aria-expanded', String(isOpen));
 
-    const cleanup = () => {
-      if (binding.animation === animation) {
+    function cleanup() {
+      if (binding?.animation === animation) {
         binding.animation = null;
       }
-    };
+    }
 
     if (!this.#controller) {
       return;
@@ -376,9 +376,9 @@ export default class Accordion {
     }
 
     return new Promise<void>((resolve) => {
-      const done = () => {
+      function done() {
         resolve();
-      };
+      }
 
       animation.addEventListener('cancel', done, { once: true });
       animation.addEventListener('finish', done, { once: true });
