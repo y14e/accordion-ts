@@ -1,3 +1,17 @@
+/**
+ * accordion.ts
+ *
+ * @version 1.0.0
+ * @author Yusuke Kamiyamane
+ * @license MIT
+ * @copyright Copyright (c) 2026 Yusuke Kamiyamane
+ * @see {@link https://github.com/y14e/accordion-ts}
+ */
+
+// -----------------------------------------------------------------------------
+// [Types]
+// -----------------------------------------------------------------------------
+
 export interface AccordionOptions {
   readonly animation?: {
     readonly duration?: number;
@@ -22,6 +36,10 @@ type Binding = {
   content: HTMLElement;
   animation: Animation | null;
 };
+
+// -----------------------------------------------------------------------------
+// [APIs]
+// -----------------------------------------------------------------------------
 
 export default class Accordion {
   #rootElement: HTMLElement;
@@ -56,10 +74,21 @@ export default class Accordion {
 
     const { trigger, content } = this.#settings.selector;
     const NOT_NESTED = `:not(:scope ${content} *)`;
-    this.#triggerElements = [...this.#rootElement.querySelectorAll<HTMLElement>(`${trigger}${NOT_NESTED}`)];
-    this.#contentElements = [...this.#rootElement.querySelectorAll<HTMLElement>(`${content}${NOT_NESTED}`)];
+    this.#triggerElements = [
+      ...this.#rootElement.querySelectorAll<HTMLElement>(
+        `${trigger}${NOT_NESTED}`,
+      ),
+    ];
+    this.#contentElements = [
+      ...this.#rootElement.querySelectorAll<HTMLElement>(
+        `${content}${NOT_NESTED}`,
+      ),
+    ];
 
-    if (this.#triggerElements.length === 0 || this.#contentElements.length === 0) {
+    if (
+      this.#triggerElements.length === 0 ||
+      this.#contentElements.length === 0
+    ) {
       throw new Error('Trigger or content element missing');
     }
 
@@ -67,13 +96,21 @@ export default class Accordion {
   }
 
   open(trigger: HTMLElement): void {
-    if (trigger instanceof HTMLElement && !this.#isDestroyed && this.#bindings?.has(trigger)) {
+    if (
+      trigger instanceof HTMLElement &&
+      !this.#isDestroyed &&
+      this.#bindings?.has(trigger)
+    ) {
       this.#toggle(trigger, true);
     }
   }
 
   close(trigger: HTMLElement): void {
-    if (trigger instanceof HTMLElement && !this.#isDestroyed && this.#bindings?.has(trigger)) {
+    if (
+      trigger instanceof HTMLElement &&
+      !this.#isDestroyed &&
+      this.#bindings?.has(trigger)
+    ) {
       this.#toggle(trigger, false);
     }
   }
@@ -128,7 +165,10 @@ export default class Accordion {
 
       content.id ||= `accordion-content-${id}`;
       trigger.setAttribute('aria-controls', content.id);
-      trigger.setAttribute('aria-expanded', trigger.getAttribute('aria-expanded') ?? 'false');
+      trigger.setAttribute(
+        'aria-expanded',
+        trigger.getAttribute('aria-expanded') ?? 'false',
+      );
       trigger.id ||= `accordion-trigger-${id}`;
 
       if (!this.#isFocusable(trigger)) {
@@ -139,9 +179,14 @@ export default class Accordion {
 
       trigger.addEventListener('click', this.#onTriggerClick, { signal });
       trigger.addEventListener('keydown', this.#onTriggerKeyDown, { signal });
-      content.setAttribute('aria-labelledby', `${content.getAttribute('aria-labelledby') ?? ''} ${trigger.id}`.trim());
+      content.setAttribute(
+        'aria-labelledby',
+        `${content.getAttribute('aria-labelledby') ?? ''} ${trigger.id}`.trim(),
+      );
       content.setAttribute('role', 'region');
-      content.addEventListener('beforematch', this.#onContentBeforeMatch, { signal });
+      content.addEventListener('beforematch', this.#onContentBeforeMatch, {
+        signal,
+      });
       const binding = this.#createBinding(trigger, content);
       this.#bindings.set(trigger, binding);
       this.#bindings.set(content, binding);
@@ -235,7 +280,9 @@ export default class Accordion {
     if (name && isOpen) {
       const opened = this.#triggerElements?.find(
         (t) =>
-          t !== trigger && t.getAttribute('data-accordion-name') === name && t.getAttribute('aria-expanded') === 'true',
+          t !== trigger &&
+          t.getAttribute('data-accordion-name') === name &&
+          t.getAttribute('aria-expanded') === 'true',
       );
 
       if (opened) {
@@ -245,7 +292,9 @@ export default class Accordion {
 
     trigger.setAttribute(
       'aria-label',
-      trigger.getAttribute(`data-accordion-${isOpen ? 'expanded' : 'collapsed'}-label`) ??
+      trigger.getAttribute(
+        `data-accordion-${isOpen ? 'expanded' : 'collapsed'}-label`,
+      ) ??
         trigger.getAttribute('aria-label') ??
         '',
     );
@@ -313,7 +362,10 @@ export default class Accordion {
   }
 
   #isFocusable(element: HTMLElement) {
-    return !element.hasAttribute('disabled') && element.getAttribute('tabindex') !== '-1';
+    return (
+      !element.hasAttribute('disabled') &&
+      element.getAttribute('tabindex') !== '-1'
+    );
   }
 
   #waitAnimation(animation: Animation) {
