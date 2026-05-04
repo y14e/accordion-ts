@@ -262,7 +262,7 @@ export default class Accordion {
   };
 
   #toggle(trigger: HTMLElement, isOpen: boolean, isMatch = false) {
-    if (String(isOpen) === trigger.getAttribute('aria-expanded')) {
+    if (trigger.getAttribute('aria-expanded') === String(isOpen)) {
       return;
     }
 
