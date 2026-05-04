@@ -136,7 +136,7 @@ export default class Accordion {
     this.#rootElement.removeAttribute('data-accordion-initialized');
 
     if (!this.#triggerElements) {
-      return;
+      throw new Error('Unreachable');
     }
 
     if (!force) {
@@ -195,7 +195,7 @@ export default class Accordion {
       const binding = this.#createBinding(trigger, content);
 
       if (!this.#bindings) {
-        return;
+        throw new Error('Unreachable');
       }
 
       this.#bindings.set(trigger, binding);
