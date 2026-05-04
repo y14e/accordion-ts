@@ -52,7 +52,7 @@ export default class Accordion {
   };
   #settings: DeepRequired<AccordionOptions>;
   #triggerElements: HTMLElement[] | null;
-  #contentElements: HTMLElement[] | null;
+  #contentElements!: HTMLElement[] | null;
   #bindings: WeakMap<HTMLElement, Binding> | null = new WeakMap();
   #controller: AbortController | null = new AbortController();
   #isDestroyed = false;
@@ -79,17 +79,20 @@ export default class Accordion {
         `${trigger}${NOT_NESTED}`,
       ),
     ];
+
+    if (this.#triggerElements.length === 0) {
+      console.warn('Missing trigger elements');
+      return;
+    }
+
     this.#contentElements = [
       ...this.#rootElement.querySelectorAll<HTMLElement>(
         `${content}${NOT_NESTED}`,
       ),
     ];
 
-    if (
-      this.#triggerElements.length === 0 ||
-      this.#contentElements.length === 0
-    ) {
-      console.warn('Missing trigger or content elements');
+    if (this.#contentElements.length === 0) {
+      console.warn('Missing content elements');
       return;
     }
 
