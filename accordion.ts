@@ -1,7 +1,7 @@
 /**
  * accordion.ts
  *
- * @version 1.0.0
+ * @version 1.0.1
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) 2026 Yusuke Kamiyamane
@@ -59,7 +59,7 @@ export default class Accordion {
 
   constructor(root: HTMLElement, options: AccordionOptions = {}) {
     if (!(root instanceof HTMLElement)) {
-      throw new Error('Root element missing');
+      throw new TypeError('Invalid root element');
     }
 
     this.#rootElement = root;
@@ -89,34 +89,40 @@ export default class Accordion {
       this.#triggerElements.length === 0 ||
       this.#contentElements.length === 0
     ) {
-      throw new Error('Trigger or content element missing');
+      throw new Error('Missing trigger or content elements');
     }
 
     this.#initialize();
   }
 
   open(trigger: HTMLElement): void {
-    if (
-      trigger instanceof HTMLElement &&
-      !this.#isDestroyed &&
-      this.#bindings?.has(trigger)
-    ) {
-      this.#toggle(trigger, true);
+    if (this.#isDestroyed) {
+      return;
     }
+
+    if (!(trigger instanceof HTMLElement) || !this.#bindings?.has(trigger)) {
+      console.warn('Invalid trigger element');
+      return;
+    }
+
+    this.#toggle(trigger, true);
   }
 
   close(trigger: HTMLElement): void {
-    if (
-      trigger instanceof HTMLElement &&
-      !this.#isDestroyed &&
-      this.#bindings?.has(trigger)
-    ) {
-      this.#toggle(trigger, false);
+    if (this.#isDestroyed) {
+      return;
     }
+
+    if (!(trigger instanceof HTMLElement) || !this.#bindings?.has(trigger)) {
+      console.warn('Invalid trigger element');
+      return;
+    }
+
+    this.#toggle(trigger, false);
   }
 
   async destroy(force = false): Promise<void> {
-    if (this.#isDestroyed || !this.#triggerElements) {
+    if (this.#isDestroyed) {
       return;
     }
 
@@ -125,15 +131,19 @@ export default class Accordion {
     this.#controller = null;
     this.#rootElement.removeAttribute('data-accordion-initialized');
 
+    if (!this.#triggerElements) {
+      return;
+    }
+
     if (!force) {
       const promises: Promise<void>[] = [];
 
       this.#triggerElements.forEach((trigger) => {
-        const animation = this.#bindings?.get(trigger)?.animation;
-
-        if (animation) {
-          promises.push(this.#waitAnimation(animation));
-        }
+        promises.push(
+          this.#waitAnimation(
+            this.#bindings?.get(trigger)?.animation as Animation,
+          ),
+        );
       });
 
       await Promise.allSettled(promises);
@@ -149,20 +159,11 @@ export default class Accordion {
   }
 
   #initialize() {
-    if (!this.#controller) {
-      return;
-    }
-
-    const { signal } = this.#controller;
+    const { signal } = this.#controller as AbortController;
 
     this.#triggerElements?.forEach((trigger, i) => {
       const id = Math.random().toString(36).slice(-8);
-      const content = this.#contentElements?.[i];
-
-      if (!content || !this.#bindings) {
-        return;
-      }
-
+      const content = this.#contentElements?.[i] as HTMLElement;
       content.id ||= `accordion-content-${id}`;
       trigger.setAttribute('aria-controls', content.id);
       trigger.setAttribute(
@@ -188,6 +189,11 @@ export default class Accordion {
         signal,
       });
       const binding = this.#createBinding(trigger, content);
+
+      if (!this.#bindings) {
+        return;
+      }
+
       this.#bindings.set(trigger, binding);
       this.#bindings.set(content, binding);
     });
@@ -198,18 +204,11 @@ export default class Accordion {
   #onTriggerClick = (event: Event) => {
     event.preventDefault();
     event.stopPropagation();
-    const trigger = event.currentTarget;
-
-    if (trigger instanceof HTMLElement) {
-      this.#toggle(trigger, trigger.getAttribute('aria-expanded') === 'false');
-    }
+    const trigger = event.currentTarget as HTMLElement;
+    this.#toggle(trigger, trigger.getAttribute('aria-expanded') === 'false');
   };
 
   #onTriggerKeyDown = (event: KeyboardEvent) => {
-    if (!this.#triggerElements) {
-      return;
-    }
-
     const { key } = event;
 
     if (!['Enter', ' ', 'End', 'Home', 'ArrowUp', 'ArrowDown'].includes(key)) {
@@ -218,13 +217,11 @@ export default class Accordion {
 
     event.preventDefault();
     event.stopPropagation();
-    const focusables = this.#triggerElements.filter(this.#isFocusable);
-    const active = this.#getActiveElement();
 
-    if (!active) {
-      return;
-    }
-
+    const focusables = (this.#triggerElements as HTMLElement[]).filter(
+      this.#isFocusable,
+    );
+    const active = this.#getActiveElement() as HTMLElement;
     const currentIndex = focusables.indexOf(active);
     let newIndex = currentIndex;
 
@@ -251,17 +248,9 @@ export default class Accordion {
   };
 
   #onContentBeforeMatch = (event: Event) => {
-    const content = event.currentTarget;
-
-    if (!(content instanceof HTMLElement)) {
-      return;
-    }
-
-    const binding = this.#bindings?.get(content);
-
-    if (!binding) {
-      return;
-    }
+    const binding = this.#bindings?.get(
+      event.currentTarget as HTMLElement,
+    ) as Binding;
 
     if (binding.trigger.getAttribute('aria-expanded') === 'false') {
       this.#toggle(binding.trigger, true, true);
@@ -269,9 +258,7 @@ export default class Accordion {
   };
 
   #toggle(trigger: HTMLElement, isOpen: boolean, isMatch = false) {
-    const binding = this.#bindings?.get(trigger);
-
-    if (!binding || String(isOpen) === trigger.getAttribute('aria-expanded')) {
+    if (String(isOpen) === trigger.getAttribute('aria-expanded')) {
       return;
     }
 
@@ -299,6 +286,7 @@ export default class Accordion {
         '',
     );
 
+    const binding = this.#bindings?.get(trigger) as Binding;
     const { content } = binding;
     const startSize = content.hidden ? 0 : content.offsetHeight;
 
@@ -323,11 +311,7 @@ export default class Accordion {
       }
     }
 
-    if (!this.#controller) {
-      return;
-    }
-
-    const { signal } = this.#controller;
+    const { signal } = this.#controller as AbortController;
     animation.addEventListener('cancel', cleanup, { once: true, signal });
 
     animation.addEventListener(
