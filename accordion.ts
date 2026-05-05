@@ -1,7 +1,7 @@
 /**
  * accordion.ts
  *
- * @version 1.0.1
+ * @version 1.0.2
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -262,7 +262,7 @@ export default class Accordion {
   };
 
   #toggle(trigger: HTMLElement, isOpen: boolean, isMatch = false) {
-    if (trigger.getAttribute('aria-expanded') === String(isOpen)) {
+    if (Boolean(trigger.getAttribute('aria-expanded')) === isOpen) {
       return;
     }
 
@@ -340,13 +340,16 @@ export default class Accordion {
   }
 
   #getActiveElement() {
-    let active = document.activeElement;
+    function walk(node: Element | null): Element | null {
+      if (node === null) {
+        return null;
+      }
 
-    while (active instanceof HTMLElement && active.shadowRoot?.activeElement) {
-      active = active.shadowRoot.activeElement;
+      const active = node.shadowRoot?.activeElement;
+      return active ? walk(active) : node;
     }
 
-    return active instanceof HTMLElement ? active : null;
+    return walk(document.activeElement);
   }
 
   #isFocusable(element: HTMLElement) {
