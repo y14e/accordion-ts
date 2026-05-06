@@ -1,7 +1,7 @@
 /**
  * accordion.ts
  *
- * @version 1.0.2
+ * @version 1.0.3
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -341,7 +341,7 @@ export default class Accordion {
 
   #getActiveElement() {
     function walk(node: Element | null): Element | null {
-      if (node === null) {
+      if (!node) {
         return null;
       }
 
