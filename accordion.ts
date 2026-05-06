@@ -80,7 +80,7 @@ export default class Accordion {
       ),
     ];
 
-    if (this.#triggerElements.length === 0) {
+    if (!this.#triggerElements.length) {
       console.warn('Missing trigger elements');
       return;
     }
@@ -91,7 +91,7 @@ export default class Accordion {
       ),
     ];
 
-    if (this.#contentElements.length === 0) {
+    if (!this.#contentElements.length) {
       console.warn('Missing content elements');
       return;
     }
