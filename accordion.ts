@@ -1,7 +1,7 @@
 /**
  * accordion.ts
  *
- * @version 1.0.3
+ * @version 1.0.4
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -340,23 +340,18 @@ export default class Accordion {
   }
 
   #getActiveElement() {
-    function walk(node: Element | null): Element | null {
-      if (!node) {
-        return null;
-      }
+    let current = document.activeElement;
 
-      const active = node.shadowRoot?.activeElement;
-      return active ? walk(active) : node;
+    while (current?.shadowRoot?.activeElement) {
+      current = current.shadowRoot.activeElement;
     }
 
-    return walk(document.activeElement);
+    return current;
   }
 
   #isFocusable(element: HTMLElement) {
-    return (
-      !element.hasAttribute('disabled') &&
-      element.getAttribute('tabindex') !== '-1'
-    );
+    const index = element.getAttribute('tabindex');
+    return !element.hasAttribute('disabled') && (!index || Number(index) >= 0);
   }
 
   #waitAnimation(animation: Animation) {
