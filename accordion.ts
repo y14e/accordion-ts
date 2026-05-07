@@ -1,7 +1,7 @@
 /**
  * accordion.ts
  *
- * @version 1.0.4
+ * @version 1.0.6
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -135,25 +135,23 @@ export default class Accordion {
     this.#controller = null;
     this.#rootElement.removeAttribute('data-accordion-initialized');
 
-    if (!this.#triggerElements) {
-      throw new Error('Unreachable');
-    }
-
     if (!force) {
       const promises: Promise<void>[] = [];
 
-      this.#triggerElements.forEach((trigger) => {
-        promises.push(
-          this.#waitAnimation(
-            this.#bindings?.get(trigger)?.animation as Animation,
-          ),
-        );
+      this.#triggerElements?.forEach((trigger) => {
+        const animation = this.#bindings?.get(trigger)?.animation;
+
+        if (!animation) {
+          throw new Error('Unreachable');
+        }
+
+        promises.push(waitAnimation(animation));
       });
 
       await Promise.allSettled(promises);
     }
 
-    this.#triggerElements.forEach((trigger) => {
+    this.#triggerElements?.forEach((trigger) => {
       this.#bindings?.get(trigger)?.animation?.cancel();
     });
 
@@ -163,11 +161,20 @@ export default class Accordion {
   }
 
   #initialize() {
-    const { signal } = this.#controller as AbortController;
+    if (!this.#controller) {
+      throw new Error('Unreachable');
+    }
+
+    const { signal } = this.#controller;
 
     this.#triggerElements?.forEach((trigger, i) => {
       const id = Math.random().toString(36).slice(-8);
-      const content = this.#contentElements?.[i] as HTMLElement;
+      const content = this.#contentElements?.[i];
+
+      if (!content) {
+        throw new Error('Unreachable');
+      }
+
       content.id ||= `accordion-content-${id}`;
       trigger.setAttribute('aria-controls', content.id);
       trigger.setAttribute(
@@ -176,7 +183,7 @@ export default class Accordion {
       );
       trigger.id ||= `accordion-trigger-${id}`;
 
-      if (!this.#isFocusable(trigger)) {
+      if (!isFocusable(trigger)) {
         trigger.setAttribute('aria-disabled', 'true');
         trigger.setAttribute('tabindex', '-1');
         trigger.style.setProperty('pointer-events', 'none');
@@ -192,14 +199,9 @@ export default class Accordion {
       content.addEventListener('beforematch', this.#onContentBeforeMatch, {
         signal,
       });
-      const binding = this.#createBinding(trigger, content);
-
-      if (!this.#bindings) {
-        throw new Error('Unreachable');
-      }
-
-      this.#bindings.set(trigger, binding);
-      this.#bindings.set(content, binding);
+      const binding = createBinding(trigger, content);
+      this.#bindings?.set(trigger, binding);
+      this.#bindings?.set(content, binding);
     });
 
     this.#rootElement.setAttribute('data-accordion-initialized', '');
@@ -208,7 +210,12 @@ export default class Accordion {
   #onTriggerClick = (event: Event) => {
     event.preventDefault();
     event.stopPropagation();
-    const trigger = event.currentTarget as HTMLElement;
+    const trigger = event.currentTarget;
+
+    if (!(trigger instanceof HTMLElement)) {
+      throw new Error('Unreachable');
+    }
+
     this.#toggle(trigger, trigger.getAttribute('aria-expanded') === 'false');
   };
 
@@ -222,10 +229,17 @@ export default class Accordion {
     event.preventDefault();
     event.stopPropagation();
 
-    const focusables = (this.#triggerElements as HTMLElement[]).filter(
-      this.#isFocusable,
-    );
-    const active = this.#getActiveElement() as HTMLElement;
+    if (!this.#triggerElements) {
+      throw new Error('Unreachable');
+    }
+
+    const focusables = this.#triggerElements.filter(isFocusable);
+    const active = getActiveElement();
+
+    if (!(active instanceof HTMLElement)) {
+      throw new Error('Unreachable');
+    }
+
     const currentIndex = focusables.indexOf(active);
     let newIndex = currentIndex;
 
@@ -252,9 +266,17 @@ export default class Accordion {
   };
 
   #onContentBeforeMatch = (event: Event) => {
-    const binding = this.#bindings?.get(
-      event.currentTarget as HTMLElement,
-    ) as Binding;
+    const target = event.currentTarget;
+
+    if (!(target instanceof HTMLElement)) {
+      throw new Error('Unreachable');
+    }
+
+    const binding = this.#bindings?.get(target);
+
+    if (!binding) {
+      throw new Error('Unreachable');
+    }
 
     if (binding.trigger.getAttribute('aria-expanded') === 'false') {
       this.#toggle(binding.trigger, true, true);
@@ -262,7 +284,7 @@ export default class Accordion {
   };
 
   #toggle(trigger: HTMLElement, isOpen: boolean, isMatch = false) {
-    if (Boolean(trigger.getAttribute('aria-expanded')) === isOpen) {
+    if (trigger.getAttribute('aria-expanded') === String(isOpen)) {
       return;
     }
 
@@ -290,7 +312,12 @@ export default class Accordion {
         '',
     );
 
-    const binding = this.#bindings?.get(trigger) as Binding;
+    const binding = this.#bindings?.get(trigger);
+
+    if (!binding) {
+      throw new Error('Unreachable');
+    }
+
     const { content } = binding;
     const startSize = content.hidden ? 0 : content.offsetHeight;
 
@@ -315,7 +342,11 @@ export default class Accordion {
       }
     }
 
-    const { signal } = this.#controller as AbortController;
+    if (!this.#controller) {
+      throw new Error('Unreachable');
+    }
+
+    const { signal } = this.#controller;
     animation.addEventListener('cancel', cleanup, { once: true, signal });
 
     animation.addEventListener(
@@ -334,40 +365,44 @@ export default class Accordion {
       { once: true, signal },
     );
   }
+}
 
-  #createBinding(trigger: HTMLElement, content: HTMLElement) {
-    return { trigger, content, animation: null };
+// -----------------------------------------------------------------------------
+// Utils
+// -----------------------------------------------------------------------------
+
+function createBinding(trigger: HTMLElement, content: HTMLElement) {
+  return { trigger, content, animation: null };
+}
+
+function getActiveElement() {
+  let current = document.activeElement;
+
+  while (current?.shadowRoot?.activeElement) {
+    current = current.shadowRoot.activeElement;
   }
 
-  #getActiveElement() {
-    let current = document.activeElement;
+  return current;
+}
 
-    while (current?.shadowRoot?.activeElement) {
-      current = current.shadowRoot.activeElement;
+function isFocusable(element: HTMLElement) {
+  const index = element.getAttribute('tabindex');
+  return !element.hasAttribute('disabled') && (!index || Number(index) >= 0);
+}
+
+function waitAnimation(animation: Animation) {
+  const { playState } = animation;
+
+  if (playState === 'idle' || playState === 'finished') {
+    return Promise.resolve();
+  }
+
+  return new Promise<void>((resolve) => {
+    function done() {
+      resolve();
     }
 
-    return current;
-  }
-
-  #isFocusable(element: HTMLElement) {
-    const index = element.getAttribute('tabindex');
-    return !element.hasAttribute('disabled') && (!index || Number(index) >= 0);
-  }
-
-  #waitAnimation(animation: Animation) {
-    const { playState } = animation;
-
-    if (playState === 'idle' || playState === 'finished') {
-      return Promise.resolve();
-    }
-
-    return new Promise<void>((resolve) => {
-      function done() {
-        resolve();
-      }
-
-      animation.addEventListener('cancel', done, { once: true });
-      animation.addEventListener('finish', done, { once: true });
-    });
-  }
+    animation.addEventListener('cancel', done, { once: true });
+    animation.addEventListener('finish', done, { once: true });
+  });
 }
