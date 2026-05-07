@@ -141,18 +141,18 @@ export default class Accordion {
       this.#triggerElements?.forEach((trigger) => {
         const animation = this.#bindings?.get(trigger)?.animation;
 
-        if (!animation) {
-          throw new Error('Unreachable');
+        if (animation) {
+          promises.push(waitAnimation(animation));
         }
-
-        promises.push(waitAnimation(animation));
       });
 
       await Promise.allSettled(promises);
     }
 
     this.#triggerElements?.forEach((trigger) => {
-      this.#bindings?.get(trigger)?.animation?.cancel();
+      const animation = this.#bindings?.get(trigger)?.animation;
+      animation?.commitStyles();
+      animation?.cancel();
     });
 
     this.#triggerElements = null;
