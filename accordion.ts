@@ -131,8 +131,6 @@ export default class Accordion {
     }
 
     this.#isDestroyed = true;
-    this.#controller?.abort();
-    this.#controller = null;
     this.#rootElement.removeAttribute('data-accordion-initialized');
 
     if (!force) {
@@ -150,11 +148,11 @@ export default class Accordion {
     }
 
     this.#triggerElements?.forEach((trigger) => {
-      const animation = this.#bindings?.get(trigger)?.animation;
-      animation?.commitStyles();
-      animation?.cancel();
+      this.#bindings?.get(trigger)?.animation?.cancel();
     });
 
+    this.#controller?.abort();
+    this.#controller = null;
     this.#triggerElements = null;
     this.#contentElements = null;
     this.#bindings = null;
