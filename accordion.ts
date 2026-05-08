@@ -1,7 +1,7 @@
 /**
  * accordion.ts
  *
- * @version 1.0.6
+ * @version 1.1.0
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -54,7 +54,8 @@ export default class Accordion {
   #triggerElements: HTMLElement[] | null;
   #contentElements!: HTMLElement[] | null;
   #bindings: WeakMap<HTMLElement, Binding> | null = new WeakMap();
-  #controller: AbortController | null = new AbortController();
+  #eventController: AbortController | null = new AbortController();
+  #animationController: AbortController | null = new AbortController();
   #isDestroyed = false;
 
   constructor(root: HTMLElement, options: AccordionOptions = {}) {
@@ -131,6 +132,8 @@ export default class Accordion {
     }
 
     this.#isDestroyed = true;
+    this.#eventController?.abort();
+    this.#eventController = null;
     this.#rootElement.removeAttribute('data-accordion-initialized');
 
     if (!force) {
@@ -151,8 +154,8 @@ export default class Accordion {
       this.#bindings?.get(trigger)?.animation?.cancel();
     });
 
-    this.#controller?.abort();
-    this.#controller = null;
+    this.#animationController?.abort();
+    this.#animationController = null;
     this.#triggerElements = null;
     this.#contentElements = null;
     this.#bindings = null;
@@ -163,7 +166,7 @@ export default class Accordion {
       throw new Error('Unreachable');
     }
 
-    const { signal } = this.#controller;
+    const { signal } = this.#eventController;
 
     this.#triggerElements?.forEach((trigger, i) => {
       const id = Math.random().toString(36).slice(-8);
@@ -340,11 +343,11 @@ export default class Accordion {
       }
     }
 
-    if (!this.#controller) {
+    if (!this.#animationController) {
       throw new Error('Unreachable');
     }
 
-    const { signal } = this.#controller;
+    const { signal } = this.#animationController;
     animation.addEventListener('cancel', cleanup, { once: true, signal });
 
     animation.addEventListener(
