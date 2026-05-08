@@ -54,7 +54,7 @@ export default class Accordion {
   #triggerElements: HTMLElement[];
   #contentElements!: HTMLElement[];
   #bindings = new WeakMap<HTMLElement, Binding>();
-  #eventController: AbortController | null = new AbortController();
+  #eventController: AbortController | null = null;
   #animationController: AbortController | null = new AbortController();
   #isDestroyed = false;
 
@@ -105,7 +105,7 @@ export default class Accordion {
       return;
     }
 
-    if (!(trigger instanceof HTMLElement) || !this.#bindings?.has(trigger)) {
+    if (!(trigger instanceof HTMLElement) || !this.#bindings.has(trigger)) {
       console.warn('Invalid trigger element');
       return;
     }
@@ -118,7 +118,7 @@ export default class Accordion {
       return;
     }
 
-    if (!(trigger instanceof HTMLElement) || !this.#bindings?.has(trigger)) {
+    if (!(trigger instanceof HTMLElement) || !this.#bindings.has(trigger)) {
       console.warn('Invalid trigger element');
       return;
     }
@@ -161,7 +161,7 @@ export default class Accordion {
   }
 
   #initialize() {
-    if (!this.#controller) {
+    if (!this.#eventController) {
       throw new Error('Unreachable');
     }
 
@@ -169,7 +169,7 @@ export default class Accordion {
 
     this.#triggerElements.forEach((trigger, i) => {
       const id = Math.random().toString(36).slice(-8);
-      const content = this.#contentElements?.[i];
+      const content = this.#contentElements[i];
 
       if (!content) {
         throw new Error('Unreachable');
@@ -228,11 +228,6 @@ export default class Accordion {
 
     event.preventDefault();
     event.stopPropagation();
-
-    if (!this.#triggerElements) {
-      throw new Error('Unreachable');
-    }
-
     const focusables = this.#triggerElements.filter(isFocusable);
     const active = getActiveElement();
 
@@ -272,13 +267,9 @@ export default class Accordion {
       throw new Error('Unreachable');
     }
 
-    const binding = this.#bindings?.get(target);
+    const binding = this.#bindings.get(target);
 
-    if (!binding) {
-      throw new Error('Unreachable');
-    }
-
-    if (binding.trigger.getAttribute('aria-expanded') === 'false') {
+    if (binding?.trigger.getAttribute('aria-expanded') === 'false') {
       this.#toggle(binding.trigger, true, true);
     }
   };
@@ -291,7 +282,7 @@ export default class Accordion {
     const name = trigger.getAttribute('data-accordion-name');
 
     if (name && isOpen) {
-      const opened = this.#triggerElements?.find(
+      const opened = this.#triggerElements.find(
         (t) =>
           t !== trigger &&
           t.getAttribute('data-accordion-name') === name &&
@@ -312,7 +303,7 @@ export default class Accordion {
         '',
     );
 
-    const binding = this.#bindings?.get(trigger);
+    const binding = this.#bindings.get(trigger);
 
     if (!binding) {
       throw new Error('Unreachable');
