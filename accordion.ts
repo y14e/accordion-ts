@@ -161,20 +161,11 @@ export default class Accordion {
   }
 
   #initialize() {
-    if (!this.#eventController) {
-      throw new Error('Unreachable');
-    }
-
-    const { signal } = this.#eventController;
+    const { signal } = this.#eventController as AbortController;
 
     this.#triggerElements.forEach((trigger, i) => {
       const id = Math.random().toString(36).slice(-8);
-      const content = this.#contentElements[i];
-
-      if (!content) {
-        throw new Error('Unreachable');
-      }
-
+      const content = this.#contentElements[i] as HTMLElement;
       content.id ||= `accordion-content-${id}`;
       trigger.setAttribute('aria-controls', content.id);
       trigger.setAttribute(
@@ -210,12 +201,7 @@ export default class Accordion {
   #onTriggerClick = (event: Event) => {
     event.preventDefault();
     event.stopPropagation();
-    const trigger = event.currentTarget;
-
-    if (!(trigger instanceof HTMLElement)) {
-      throw new Error('Unreachable');
-    }
-
+    const trigger = event.currentTarget as HTMLElement;
     this.#toggle(trigger, trigger.getAttribute('aria-expanded') === 'false');
   };
 
@@ -229,12 +215,7 @@ export default class Accordion {
     event.preventDefault();
     event.stopPropagation();
     const focusables = this.#triggerElements.filter(isFocusable);
-    const active = getActiveElement();
-
-    if (!(active instanceof HTMLElement)) {
-      throw new Error('Unreachable');
-    }
-
+    const active = getActiveElement() as HTMLElement;
     const currentIndex = focusables.indexOf(active);
     let newIndex = currentIndex;
 
@@ -261,15 +242,11 @@ export default class Accordion {
   };
 
   #onContentBeforeMatch = (event: Event) => {
-    const target = event.currentTarget;
+    const binding = this.#bindings.get(
+      event.currentTarget as HTMLElement,
+    ) as Binding;
 
-    if (!(target instanceof HTMLElement)) {
-      throw new Error('Unreachable');
-    }
-
-    const binding = this.#bindings.get(target);
-
-    if (binding?.trigger.getAttribute('aria-expanded') === 'false') {
+    if (binding.trigger.getAttribute('aria-expanded') === 'false') {
       this.#toggle(binding.trigger, true, true);
     }
   };
@@ -303,12 +280,7 @@ export default class Accordion {
         '',
     );
 
-    const binding = this.#bindings.get(trigger);
-
-    if (!binding) {
-      throw new Error('Unreachable');
-    }
-
+    const binding = this.#bindings.get(trigger) as Binding;
     const { content } = binding;
     const startSize = content.hidden ? 0 : content.offsetHeight;
 
@@ -333,11 +305,7 @@ export default class Accordion {
       }
     }
 
-    if (!this.#animationController) {
-      throw new Error('Unreachable');
-    }
-
-    const { signal } = this.#animationController;
+    const { signal } = this.#animationController as AbortController;
     animation.addEventListener('cancel', cleanup, { once: true, signal });
 
     animation.addEventListener(
