@@ -54,7 +54,7 @@ export default class Accordion {
   #triggerElements: HTMLElement[];
   #contentElements!: HTMLElement[];
   #bindings = new WeakMap<HTMLElement, Binding>();
-  #eventController: AbortController | null = null;
+  #eventController: AbortController | null = new AbortController();
   #animationController: AbortController | null = new AbortController();
   #isDestroyed = false;
 
