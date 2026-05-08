@@ -388,12 +388,7 @@ function waitAnimation(animation: Animation) {
     return Promise.resolve();
   }
 
-  return new Promise<void>((resolve) => {
-    function done() {
-      resolve();
-    }
-
-    animation.addEventListener('cancel', done, { once: true });
-    animation.addEventListener('finish', done, { once: true });
-  });
+  return new Promise<void>((resolve) =>
+    animation.addEventListener('finish', () => resolve(), { once: true }),
+  );
 }
