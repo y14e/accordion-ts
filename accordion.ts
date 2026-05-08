@@ -51,9 +51,9 @@ export default class Accordion {
     },
   };
   #settings: DeepRequired<AccordionOptions>;
-  #triggerElements: HTMLElement[] | null;
-  #contentElements!: HTMLElement[] | null;
-  #bindings: WeakMap<HTMLElement, Binding> | null = new WeakMap();
+  #triggerElements: HTMLElement[];
+  #contentElements!: HTMLElement[];
+  #bindings = new WeakMap<HTMLElement, Binding>();
   #eventController: AbortController | null = new AbortController();
   #animationController: AbortController | null = new AbortController();
   #isDestroyed = false;
@@ -139,8 +139,8 @@ export default class Accordion {
     if (!force) {
       const promises: Promise<void>[] = [];
 
-      this.#triggerElements?.forEach((trigger) => {
-        const animation = this.#bindings?.get(trigger)?.animation;
+      this.#triggerElements.forEach((trigger) => {
+        const animation = this.#bindings.get(trigger)?.animation;
 
         if (animation) {
           promises.push(waitAnimation(animation));
@@ -150,15 +150,14 @@ export default class Accordion {
       await Promise.allSettled(promises);
     }
 
-    this.#triggerElements?.forEach((trigger) => {
-      this.#bindings?.get(trigger)?.animation?.cancel();
+    this.#triggerElements.forEach((trigger) => {
+      this.#bindings.get(trigger)?.animation?.cancel();
     });
 
     this.#animationController?.abort();
     this.#animationController = null;
-    this.#triggerElements = null;
-    this.#contentElements = null;
-    this.#bindings = null;
+    this.#triggerElements.length = 0;
+    this.#contentElements.length = 0;
   }
 
   #initialize() {
@@ -168,7 +167,7 @@ export default class Accordion {
 
     const { signal } = this.#eventController;
 
-    this.#triggerElements?.forEach((trigger, i) => {
+    this.#triggerElements.forEach((trigger, i) => {
       const id = Math.random().toString(36).slice(-8);
       const content = this.#contentElements?.[i];
 
@@ -201,8 +200,8 @@ export default class Accordion {
         signal,
       });
       const binding = createBinding(trigger, content);
-      this.#bindings?.set(trigger, binding);
-      this.#bindings?.set(content, binding);
+      this.#bindings.set(trigger, binding);
+      this.#bindings.set(content, binding);
     });
 
     this.#rootElement.setAttribute('data-accordion-initialized', '');
