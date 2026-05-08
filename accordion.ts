@@ -134,7 +134,6 @@ export default class Accordion {
     this.#isDestroyed = true;
     this.#eventController?.abort();
     this.#eventController = null;
-    this.#rootElement.removeAttribute('data-accordion-initialized');
 
     if (!force) {
       const promises: Promise<void>[] = [];
@@ -158,6 +157,7 @@ export default class Accordion {
     this.#animationController = null;
     this.#triggerElements.length = 0;
     this.#contentElements.length = 0;
+    this.#rootElement.removeAttribute('data-accordion-initialized');
   }
 
   #initialize() {
