@@ -215,7 +215,7 @@ export default class Accordion {
     event.preventDefault();
     event.stopPropagation();
     const focusables = this.#triggerElements.filter(isFocusable);
-    const active = getActiveElement() as HTMLElement;
+    const active = getActiveElement();
     const currentIndex = focusables.indexOf(active);
     let newIndex = currentIndex;
 
@@ -341,7 +341,7 @@ function getActiveElement() {
     current = current.shadowRoot.activeElement;
   }
 
-  return current;
+  return current as HTMLElement;
 }
 
 function isFocusable(element: HTMLElement) {
