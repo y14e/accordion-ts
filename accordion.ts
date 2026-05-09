@@ -170,7 +170,7 @@ export default class Accordion {
       trigger.setAttribute('aria-controls', content.id);
       trigger.setAttribute(
         'aria-expanded',
-        trigger.getAttribute('aria-expanded') ?? 'false',
+        trigger.ariaExpanded === 'true' ? 'true' : 'false',
       );
       trigger.id ||= `accordion-trigger-${id}`;
 
@@ -202,7 +202,7 @@ export default class Accordion {
     event.preventDefault();
     event.stopPropagation();
     const trigger = event.currentTarget as HTMLElement;
-    this.#toggle(trigger, trigger.getAttribute('aria-expanded') === 'false');
+    this.#toggle(trigger, trigger.ariaExpanded !== 'true');
   };
 
   #onTriggerKeyDown = (event: KeyboardEvent) => {
@@ -246,13 +246,13 @@ export default class Accordion {
       event.currentTarget as HTMLElement,
     ) as Binding;
 
-    if (binding.trigger.getAttribute('aria-expanded') === 'false') {
+    if (binding.trigger.ariaExpanded !== 'true') {
       this.#toggle(binding.trigger, true, true);
     }
   };
 
   #toggle(trigger: HTMLElement, isOpen: boolean, isMatch = false) {
-    if (trigger.getAttribute('aria-expanded') === String(isOpen)) {
+    if (trigger.ariaExpanded === String(isOpen)) {
       return;
     }
 
@@ -263,7 +263,7 @@ export default class Accordion {
         (t) =>
           t !== trigger &&
           t.getAttribute('data-accordion-name') === name &&
-          t.getAttribute('aria-expanded') === 'true',
+          t.ariaExpanded === 'true',
       );
 
       if (opened) {
@@ -276,7 +276,7 @@ export default class Accordion {
       trigger.getAttribute(
         `data-accordion-${isOpen ? 'expanded' : 'collapsed'}-label`,
       ) ??
-        trigger.getAttribute('aria-label') ??
+        trigger.ariaLabel ??
         '',
     );
 
