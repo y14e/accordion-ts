@@ -262,13 +262,13 @@ export default class Accordion {
   };
 
   #onContentBeforeMatch = (event: Event) => {
-    const target = event.currentTarget;
+    const content = event.currentTarget;
 
-    if (!(target instanceof HTMLElement)) {
+    if (!(content instanceof HTMLElement)) {
       return;
     }
 
-    const binding = this.#bindings.get(target);
+    const binding = this.#bindings.get(content);
 
     if (!binding) {
       return;
