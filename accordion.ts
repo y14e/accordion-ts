@@ -1,7 +1,7 @@
 /**
  * accordion.ts
  *
- * @version 1.1.1
+ * @version 1.1.2
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -161,11 +161,16 @@ export default class Accordion {
   }
 
   #initialize() {
-    const { signal } = this.#eventController as AbortController;
+    const { signal } = this.#eventController ?? new AbortController();
 
     this.#triggerElements.forEach((trigger, i) => {
       const id = Math.random().toString(36).slice(-8);
-      const content = this.#contentElements[i] as HTMLElement;
+      const content = this.#contentElements[i];
+
+      if (!content) {
+        return;
+      }
+
       content.id ||= `accordion-content-${id}`;
       const controls = new Set(
         trigger.getAttribute('aria-controls')?.trim().split(/\s+/) ?? [],
@@ -206,7 +211,12 @@ export default class Accordion {
   #onTriggerClick = (event: Event) => {
     event.preventDefault();
     event.stopPropagation();
-    const trigger = event.currentTarget as HTMLElement;
+    const trigger = event.currentTarget;
+
+    if (!(trigger instanceof HTMLElement)) {
+      return;
+    }
+
     this.#toggle(trigger, trigger.ariaExpanded !== 'true');
   };
 
@@ -221,6 +231,11 @@ export default class Accordion {
     event.stopPropagation();
     const focusables = this.#triggerElements.filter(isFocusable);
     const active = getActiveElement();
+
+    if (!(active instanceof HTMLElement)) {
+      return;
+    }
+
     const currentIndex = focusables.indexOf(active);
     let newIndex = currentIndex;
 
@@ -247,9 +262,17 @@ export default class Accordion {
   };
 
   #onContentBeforeMatch = (event: Event) => {
-    const binding = this.#bindings.get(
-      event.currentTarget as HTMLElement,
-    ) as Binding;
+    const target = event.currentTarget;
+
+    if (!(target instanceof HTMLElement)) {
+      return;
+    }
+
+    const binding = this.#bindings.get(target);
+
+    if (!binding) {
+      return;
+    }
 
     if (binding.trigger.ariaExpanded !== 'true') {
       this.#toggle(binding.trigger, true, true);
@@ -285,7 +308,12 @@ export default class Accordion {
         '',
     );
 
-    const binding = this.#bindings.get(trigger) as Binding;
+    const binding = this.#bindings.get(trigger);
+
+    if (!binding) {
+      return;
+    }
+
     const { content } = binding;
     const startSize = content.hidden ? 0 : content.offsetHeight;
 
@@ -310,7 +338,7 @@ export default class Accordion {
       }
     }
 
-    const { signal } = this.#animationController as AbortController;
+    const { signal } = this.#animationController ?? new AbortController();
     animation.addEventListener('cancel', cleanup, { once: true, signal });
 
     animation.addEventListener(
@@ -346,7 +374,7 @@ function getActiveElement() {
     current = current.shadowRoot.activeElement;
   }
 
-  return current as HTMLElement;
+  return current;
 }
 
 function isFocusable(element: HTMLElement) {
