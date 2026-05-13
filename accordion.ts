@@ -42,7 +42,7 @@ type Binding = {
 // -----------------------------------------------------------------------------
 
 export default class Accordion {
-  static defaults: AccordionOptions;
+  static defaults: AccordionOptions = {};
 
   #rootElement: HTMLElement;
   #defaults = {
@@ -67,8 +67,14 @@ export default class Accordion {
 
     this.#rootElement = root;
     this.#defaults = {
-      animation: { ...this.#defaults.animation, ...(Accordion.defaults.animation ?? {}) },
-      selector: { ...this.#defaults.selector, ...(Accordion.defaults.selector ?? {}) },
+      animation: {
+        ...this.#defaults.animation,
+        ...(Accordion.defaults.animation ?? {}),
+      },
+      selector: {
+        ...this.#defaults.selector,
+        ...(Accordion.defaults.selector ?? {}),
+      },
     };
     this.#settings = {
       animation: { ...this.#defaults.animation, ...(options.animation ?? {}) },
