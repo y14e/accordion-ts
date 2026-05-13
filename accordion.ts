@@ -362,8 +362,8 @@ export default class Accordion {
   async #waitAnimationsFinish() {
     const promises: Promise<void>[] = [];
 
-    this.#triggerElements.forEach((trigger) => {
-      const animation = this.#bindings.get(trigger)?.animation;
+    this.#contentElements.forEach((content) => {
+      const animation = this.#bindings.get(content)?.animation;
 
       if (animation) {
         promises.push(waitAnimationFinish(animation));
