@@ -67,8 +67,8 @@ export default class Accordion {
 
     this.#rootElement = root;
     this.#defaults = {
-      animation: { ...this.#defaults.animation, ...(Accordion.defaults?.animation ?? {}) },
-      selector: { ...this.#defaults.selector, ...(Accordion.defaults?.selector ?? {}) },
+      animation: { ...this.#defaults.animation, ...(Accordion.defaults.animation ?? {}) },
+      selector: { ...this.#defaults.selector, ...(Accordion.defaults.selector ?? {}) },
     };
     this.#settings = {
       animation: { ...this.#defaults.animation, ...(options.animation ?? {}) },
