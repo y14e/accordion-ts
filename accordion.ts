@@ -1,7 +1,7 @@
 /**
  * accordion.ts
  *
- * @version 1.1.2
+ * @version 1.1.3
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -172,11 +172,7 @@ export default class Accordion {
       }
 
       content.id ||= `accordion-content-${id}`;
-      const controls = new Set(
-        trigger.getAttribute('aria-controls')?.trim().split(/\s+/) ?? [],
-      );
-      controls.add(content.id);
-      trigger.setAttribute('aria-controls', [...controls].join(' '));
+      addTokenToAttribute(trigger, 'aria-controls', content.id);
       trigger.setAttribute(
         'aria-expanded',
         trigger.ariaExpanded === 'true' ? 'true' : 'false',
@@ -191,11 +187,7 @@ export default class Accordion {
 
       trigger.addEventListener('click', this.#onTriggerClick, { signal });
       trigger.addEventListener('keydown', this.#onTriggerKeyDown, { signal });
-      const labelledBy = new Set(
-        content.getAttribute('aria-labelledby')?.trim().split(/\s+/) ?? [],
-      );
-      labelledBy.add(trigger.id);
-      content.setAttribute('aria-labelledby', [...labelledBy].join(' '));
+      addTokenToAttribute(content, 'aria-labelledby', trigger.id);
       content.setAttribute('role', 'region');
       content.addEventListener('beforematch', this.#onContentBeforeMatch, {
         signal,
@@ -362,6 +354,18 @@ export default class Accordion {
 // -----------------------------------------------------------------------------
 // Utils
 // -----------------------------------------------------------------------------
+
+function addTokenToAttribute(
+  element: HTMLElement,
+  attribute: string,
+  token: string,
+) {
+  const tokens = new Set(
+    element.getAttribute(attribute)?.trim().split(/\s+/) ?? [],
+  );
+  tokens.add(token);
+  element.setAttribute(attribute, [...tokens].join(' '));
+}
 
 function createBinding(trigger: HTMLElement, content: HTMLElement) {
   return { trigger, content, animation: null };
