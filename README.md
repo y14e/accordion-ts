@@ -30,6 +30,27 @@ interface AccordionOptions {
 }
 ```
 
+### ⚙️ Customize defaults
+
+Override the global default settings applied to all accordion instances. Useful for changing animation behavior or selector names across your project without repeating the same options every time.
+
+```ts
+import Accordion from './accordion';
+
+Accordion.defaults = {
+  animation: {
+    duration: 3000,
+    easing: 'linear',
+  },
+  selector: {
+    content: '.content',
+    trigger: '.trigger',
+  },
+};
+
+new Accordion(root);
+```
+
 ## 📦 APIs
 
 ### `open`
