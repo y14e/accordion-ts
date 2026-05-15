@@ -1,7 +1,7 @@
 /**
  * accordion.ts
  *
- * @version 1.2.1
+ * @version 1.2.2
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -68,11 +68,8 @@ export default class Accordion {
     this.#rootElement = root;
     this.#defaults = this.#mergeOptions(this.#defaults, Accordion.defaults);
     this.#settings = this.#mergeOptions(this.#defaults, options);
-
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    matchMedia('(prefers-reduced-motion: reduce)').matches &&
       Object.assign(this.#settings.animation, { duration: 0 });
-    }
-
     const { trigger, content } = this.#settings.selector;
     const NOT_NESTED = `:not(:scope ${content} *)`;
     this.#triggerElements = [
@@ -146,16 +143,10 @@ export default class Accordion {
     this.#isDestroyed = true;
     this.#eventController?.abort();
     this.#eventController = null;
-
-    if (!force) {
-      await this.#waitAnimationsFinish();
-    }
+    !force && (await this.#waitAnimationsFinish());
 
     this.#contentElements.forEach((content) => {
-      if (force) {
-        this.#bindings.get(content)?.animation?.finish();
-      }
-
+      force && this.#bindings.get(content)?.animation?.finish();
       this.#onAnimationFinish(content);
     });
 
@@ -269,9 +260,8 @@ export default class Accordion {
       return;
     }
 
-    if (binding.trigger.ariaExpanded !== 'true') {
+    binding.trigger.ariaExpanded !== 'true' &&
       this.#toggle(binding.trigger, true, true);
-    }
   };
 
   #toggle(trigger: HTMLElement, isOpen: boolean, isMatch = false) {
@@ -377,10 +367,7 @@ export default class Accordion {
 
     this.#contentElements.forEach((content) => {
       const animation = this.#bindings.get(content)?.animation;
-
-      if (animation) {
-        promises.push(waitAnimationFinish(animation));
-      }
+      animation && promises.push(waitAnimationFinish(animation));
     });
 
     await Promise.allSettled(promises);
