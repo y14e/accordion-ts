@@ -1,7 +1,7 @@
 /**
  * accordion.ts
  *
- * @version 1.2.3
+ * @version 1.2.4
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -44,7 +44,7 @@ type Binding = {
 export default class Accordion {
   static defaults: AccordionOptions = {};
 
-  #rootElement: HTMLElement;
+  #rootElement!: HTMLElement;
   #defaults = {
     animation: { duration: 300, easing: 'ease' },
     selector: {
@@ -52,8 +52,8 @@ export default class Accordion {
       trigger: '[data-accordion-trigger]',
     },
   };
-  #settings: DeepRequired<AccordionOptions>;
-  #triggerElements: HTMLElement[];
+  #settings!: DeepRequired<AccordionOptions>;
+  #triggerElements!: HTMLElement[];
   #contentElements!: HTMLElement[];
   #bindings = new WeakMap<HTMLElement, Binding>();
   #eventController: AbortController | null = null;
@@ -63,6 +63,11 @@ export default class Accordion {
   constructor(root: HTMLElement, options: AccordionOptions = {}) {
     if (!(root instanceof HTMLElement)) {
       throw new TypeError('Invalid root element');
+    }
+
+    if (root.hasAttribute('data-accordion-initialized')) {
+      console.warn('Already initialized');
+      return;
     }
 
     this.#rootElement = root;
